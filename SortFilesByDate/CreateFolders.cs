@@ -9,40 +9,68 @@ namespace SortFilesByDate
 {
     class CreateFolders
     {
-        private static int myDecission;
+        private static int myDecission = 3;
         public int MyDecission { get { return myDecission; } set { myDecission = value; } }
 
         private static string myPathToSort;
         public string MyPathToSort { get { return myPathToSort; } set { myPathToSort = value; } }
 
-        private static string myPathNewFolder;
+        private static string fromSelectedDate;
+        public string MySelectedDate { get { return fromSelectedDate; } set { fromSelectedDate = value; } }
 
         private static List<string> _files = new List<string>();
         private static string _dateFormat;
+        private static string myPathNewFolder;
 
         public void StartSorting()
         {
             _dateFormat = TimeFormat();
-            CreateFoldersAndSortItems();
+            CreateFoldersForItems();
         }
 
-        private static void CreateFoldersAndSortItems()
+        private static void CreateFoldersForItems()
         {
             for (int i = 0; i < _files.Count; i++)
             {
-                string monthFolderName = File.GetLastWriteTime(Path.Combine(myPathToSort, _files[i])).ToString(_dateFormat);
-                string monthFolderPath = Path.Combine(myPathNewFolder, monthFolderName);
+                string dateFolderName = "", dateFolderPath = "";
+                string myPathNewFolderBackup = myPathNewFolder;
 
-                if (!Directory.Exists(monthFolderPath))
+                if (CheckWithUserFromDateDecission(File.GetLastWriteTime(Path.Combine(myPathToSort, _files[i])).ToString("yyyy-MM-dd")))
                 {
-                    Directory.CreateDirectory(monthFolderPath);
-                }
+                    for (int j = 1; j < 4; j++)
+                    {
+                        myDecission = j;
+                        dateFolderName = File.GetLastWriteTime(Path.Combine(myPathToSort, _files[i])).ToString(TimeFormat());
+                        dateFolderPath = Path.Combine(myPathNewFolderBackup, dateFolderName);
+                        myPathNewFolderBackup = dateFolderPath;
 
-                File.Move(Path.Combine(myPathToSort, Path.GetFileName(_files[i])), Path.Combine(monthFolderPath, Path.GetFileName(_files[i])));
+                        if (!Directory.Exists(dateFolderPath))
+                        {
+                            Directory.CreateDirectory(dateFolderPath);
+                        }
+                    }
+                    File.Move(Path.Combine(myPathToSort, Path.GetFileName(_files[i])), Path.Combine(dateFolderPath, Path.GetFileName(_files[i])));
+                }
             }
         }
 
-        private static string TimeFormat()
+        private static bool CheckWithUserFromDateDecission(string date)
+        {
+            if (fromSelectedDate == null)
+                return true;
+
+            DateTime date1 = DateTime.Parse(fromSelectedDate);
+            DateTime date2 = DateTime.Parse(date);
+
+            if (DateTime.Compare(date1, date2) < 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string TimeFormat()
         {
             if (myDecission == 3)
             {
@@ -52,9 +80,13 @@ namespace SortFilesByDate
             {
                 return "yyyy-MM";
             }
-            else
+            else if (myDecission == 1)
             {
                 return "yyyy";
+            }
+            else
+            {
+                return "";
             }
         }
 
@@ -78,18 +110,20 @@ namespace SortFilesByDate
         {
             if (Directory.Exists(path))
             {
-                myPathNewFolder = Path.Combine(path, "SortedFiles");
-                Directory.CreateDirectory(myPathNewFolder);
-
-                return true;
+                FolderPath(path);
             }
             else
             {
-                myPathNewFolder = Path.Combine(myPathToSort, "SortedFiles");
-                Directory.CreateDirectory(myPathNewFolder);
-
-                return true;
+                FolderPath(myPathToSort);
             }
+
+            return true;
+        }
+
+        private void FolderPath(string path)
+        {
+            myPathNewFolder = Path.Combine(path, "SortedFiles");
+            Directory.CreateDirectory(myPathNewFolder);
         }
 
         public CreateFolders()
