@@ -2,9 +2,9 @@
 A small console software for file sorting by date (year, month or day).
 1.  Copy desired folder path (the one where the files you need to sort are located) and paste it inside software. 
 2.  Next give another folder path where you want to generate sorted files in specialized folders created by files dates:
-- year (FOLDERS 2021, 2022 etc.)
-- month (FOLDERS 2021-10, 2021-09 etc.)
-- day (FOLDERS 2021-10-30, 2022-02-10 etc.)
+- year (FOLDERS inside main sortedFolder ==> 2021, 2022 etc.)
+  - year-month (FOLDERS inside year e.g. 2021 ==> 2021-10, 2021-09 etc.)
+    - year-month-day (FOLDERS inside month e.g. 2021-10 ==> 2021-10-30, 2021-10-10 etc.)
 3.  If no path is given SortedFiles folder will be created in first given folder(where files are at).
-4.  Specify which type of sorting you want (year, month or day) as explained above.
+4.  Specify if you want to decide date from which you want to sort your files or not (1 - yes, 2 - no)
 5. Done
